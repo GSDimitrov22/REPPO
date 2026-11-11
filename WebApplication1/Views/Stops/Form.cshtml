@@ -1,0 +1,10 @@
+@model WebApplication1.Models.Stop
+@{ ViewData["Title"] = Model.StopID == 0 ? "Нов запис" : "Редактиране"; }
+<h1>@ViewData["Title"] · Спирки</h1>
+<form class="editor" asp-action="Save" asp-route-id="@Model.StopID" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <label asp-for="LocationName"></label>
+    <input asp-for="LocationName" />
+    <span asp-validation-for="LocationName"></span>
+    <div><button>Запази</button> <a asp-action="Index">Отказ</a></div>
+</form>

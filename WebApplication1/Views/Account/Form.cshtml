@@ -1,0 +1,17 @@
+@model AccountForm
+@{
+    var action = ViewContext.RouteData.Values["action"]?.ToString();
+    bool register = action == "Register";
+    ViewData["Title"] = register ? "Регистрация" : "Вход";
+}
+<h1>@ViewData["Title"]</h1>
+<form class="editor" asp-action="@action" asp-route-returnUrl="@Context.Request.Query["returnUrl"]" method="post">
+    <div asp-validation-summary="All"></div>
+    <label asp-for="Email"></label><input asp-for="Email" autocomplete="username" />
+    <label asp-for="Password"></label><input asp-for="Password" autocomplete="@(register ? "new-password" : "current-password")" />
+    @if (register)
+    {
+        <small>Поне 6 знака, малка и главна буква, цифра и специален знак.</small>
+    }
+    <button>@ViewData["Title"]</button>
+</form>

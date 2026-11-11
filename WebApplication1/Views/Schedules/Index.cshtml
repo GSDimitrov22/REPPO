@@ -1,0 +1,68 @@
+@model List<WebApplication1.Models.Schedule>
+@{ ViewData["Title"] = "Разписание"; }
+<h1>Разписание</h1>
+@if (User.IsInRole("Admin"))
+{
+    <p><a class="button" asp-action="Create">Добави запис</a></p>
+}
+<form class="filters" method="get">
+    <label>Търсене<input name="search" value="@ViewBag.Search" placeholder="Линия, описание или номер" /></label>
+    <label>Линия<select name="routeId"><option value="">Всички линии</option>
+    @foreach (var line in (List<WebApplication1.Models.Route>)ViewBag.Lines)
+    {
+        <option value="@line.RouteID" selected="@(ViewBag.RouteId == line.RouteID)">@line.RouteName</option>
+    }</select></label>
+    <label>Подреждане<select name="sort">
+        <option value="time" selected="@(ViewBag.Sort == "time")">Най-ранен час</option>
+        <option value="latest" selected="@(ViewBag.Sort == "latest")">Най-късен час</option>
+        <option value="line" selected="@(ViewBag.Sort == "line")">Име на линия</option>
+    </select></label>
+    <button>Покажи</button><a asp-action="Index">Изчисти</a>
+</form>
+@if (Model.Count == 0)
+{
+    <p>Няма намерени записи.</p>
+}
+else
+{
+<div class="scroll"><table><thead><tr>
+    <th>Маршрут</th>
+    <th>Автобус</th>
+    <th>Шофьор</th>
+    <th>Заминаване</th>
+    <th>Пристигане</th>
+    <th></th>
+</tr></thead><tbody>
+@foreach (var item in Model)
+{
+<tr>
+    <td>@(item.Route?.RouteName)</td>
+    <td>@(item.Vehicle?.LicensePlate)</td>
+    <td>@(item.Driver?.LastName)</td>
+    <td>@(item.DepartureTime.ToString("dd.MM.yyyy HH:mm"))</td>
+    <td>@(item.ArrivalTime.ToString("dd.MM.yyyy HH:mm"))</td>
+    <td>@if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@item.ScheduleID">Редактирай</a>
+        <form class="inline" asp-action="Delete" asp-route-id="@item.ScheduleID" method="post" onsubmit="return confirm('Изтриване на записа?')"><button class="link">Изтрий</button></form>
+    }
+    @if (User.IsInRole("Client") && item.DepartureTime > DateTime.Now)
+    {
+        <form asp-controller="Requests" asp-action="Create" asp-route-id="@item.ScheduleID" method="post"><button>Заяви пътуване</button></form>
+    }
+    </td>
+</tr>
+}
+</tbody></table></div>
+}
+<nav class="pages" aria-label="Страници">
+@if (ViewBag.Page > 1)
+{
+    <a asp-route-page="@(ViewBag.Page - 1)" asp-route-routeId="@ViewBag.RouteId" asp-route-sort="@ViewBag.Sort" asp-route-search="@ViewBag.Search">Назад</a>
+}
+<span>Страница @ViewBag.Page от @ViewBag.Pages</span>
+@if (ViewBag.Page < ViewBag.Pages)
+{
+    <a asp-route-page="@(ViewBag.Page + 1)" asp-route-routeId="@ViewBag.RouteId" asp-route-sort="@ViewBag.Sort" asp-route-search="@ViewBag.Search">Напред</a>
+}
+</nav>

@@ -1,0 +1,31 @@
+@model List<WebApplication1.Models.Stop>
+@{ ViewData["Title"] = "Спирки"; }
+<h1>Спирки</h1>
+@if (User.IsInRole("Admin"))
+{
+    <p><a class="button" asp-action="Create">Добави запис</a></p>
+}
+@if (Model.Count == 0)
+{
+    <p>Няма намерени записи.</p>
+}
+else
+{
+<div class="scroll"><table><thead><tr>
+    <th>Име на спирката</th>
+    <th></th>
+</tr></thead><tbody>
+@foreach (var item in Model)
+{
+<tr>
+    <td>@(item.LocationName)</td>
+    <td>@if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@item.StopID">Редактирай</a>
+        <form class="inline" asp-action="Delete" asp-route-id="@item.StopID" method="post" onsubmit="return confirm('Изтриване на записа?')"><button class="link">Изтрий</button></form>
+    }
+    </td>
+</tr>
+}
+</tbody></table></div>
+}

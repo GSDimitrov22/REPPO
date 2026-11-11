@@ -1,46 +1,48 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// 1. Configure Entity Framework and Database Context
-builder.Services.AddDbContext<TransportContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") 
-                         ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.")));
-
-// 2. Configure Identity and Roles
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddRoles<IdentityRole>()
+if (builder.Configuration["DatabaseProvider"] == "Sqlite")
+{
+    var directory = Path.Combine(builder.Environment.ContentRootPath, "App_Data");
+    Directory.CreateDirectory(directory);
+    var connection = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder
+    {
+        DataSource = Path.Combine(directory, "reppo.db"),
+        ForeignKeys = true
+    };
+    builder.Services.AddDbContext<TransportContext>(options => options.UseSqlite(connection.ToString()));
+}
+else
+{
+    builder.Services.AddDbContext<TransportContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<TransportContext>();
-
-// 3. Add Controller and View services
-builder.Services.AddControllersWithViews();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/Account/Denied";
+});
+builder.Services.AddControllersWithViews(options =>
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
+using (var scope = app.Services.CreateScope())
+{
+    await SeedData.Initialize(scope.ServiceProvider, app.Environment.IsDevelopment());
+}
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+    app.UseHttpsRedirection();
 }
-
-app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
-
-// 4. Authentication MUST come before Authorization
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapStaticAssets();
-
-// 5. Map Razor Pages (Required for Identity Login/Register UI)
-app.MapRazorPages(); 
-
-app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+app.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 app.Run();

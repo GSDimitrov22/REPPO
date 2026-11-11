@@ -1,0 +1,16 @@
+@model WebApplication1.Models.Vehicle
+@{ ViewData["Title"] = Model.VehicleID == 0 ? "Нов запис" : "Редактиране"; }
+<h1>@ViewData["Title"] · Автобуси</h1>
+<form class="editor" asp-action="Save" asp-route-id="@Model.VehicleID" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <label asp-for="Make"></label>
+    <input asp-for="Make" />
+    <span asp-validation-for="Make"></span>
+    <label asp-for="Model"></label>
+    <input asp-for="Model" />
+    <span asp-validation-for="Model"></span>
+    <label asp-for="LicensePlate"></label>
+    <input asp-for="LicensePlate" />
+    <span asp-validation-for="LicensePlate"></span>
+    <div><button>Запази</button> <a asp-action="Index">Отказ</a></div>
+</form>

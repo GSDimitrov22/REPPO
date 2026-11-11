@@ -1,0 +1,35 @@
+@model List<WebApplication1.Models.Vehicle>
+@{ ViewData["Title"] = "Автобуси"; }
+<h1>Автобуси</h1>
+@if (User.IsInRole("Admin"))
+{
+    <p><a class="button" asp-action="Create">Добави запис</a></p>
+}
+@if (Model.Count == 0)
+{
+    <p>Няма намерени записи.</p>
+}
+else
+{
+<div class="scroll"><table><thead><tr>
+    <th>Марка</th>
+    <th>Модел</th>
+    <th>Регистрационен номер</th>
+    <th></th>
+</tr></thead><tbody>
+@foreach (var item in Model)
+{
+<tr>
+    <td>@(item.Make)</td>
+    <td>@(item.Model)</td>
+    <td>@(item.LicensePlate)</td>
+    <td>@if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@item.VehicleID">Редактирай</a>
+        <form class="inline" asp-action="Delete" asp-route-id="@item.VehicleID" method="post" onsubmit="return confirm('Изтриване на записа?')"><button class="link">Изтрий</button></form>
+    }
+    </td>
+</tr>
+}
+</tbody></table></div>
+}

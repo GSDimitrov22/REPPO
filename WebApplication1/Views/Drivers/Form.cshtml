@@ -1,0 +1,19 @@
+@model WebApplication1.Models.Driver
+@{ ViewData["Title"] = Model.DriverID == 0 ? "Нов запис" : "Редактиране"; }
+<h1>@ViewData["Title"] · Шофьори</h1>
+<form class="editor" asp-action="Save" asp-route-id="@Model.DriverID" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <label asp-for="FirstName"></label>
+    <input asp-for="FirstName" />
+    <span asp-validation-for="FirstName"></span>
+    <label asp-for="LastName"></label>
+    <input asp-for="LastName" />
+    <span asp-validation-for="LastName"></span>
+    <label asp-for="LicenseCategory"></label>
+    <select asp-for="LicenseCategory"><option>D</option><option>D1</option><option>DE</option><option>D1E</option></select>
+    <span asp-validation-for="LicenseCategory"></span>
+    <label asp-for="HireDate"></label>
+    <input asp-for="HireDate" />
+    <span asp-validation-for="HireDate"></span>
+    <div><button>Запази</button> <a asp-action="Index">Отказ</a></div>
+</form>

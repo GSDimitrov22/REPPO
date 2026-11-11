@@ -1,8 +1,11 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@{ ViewData["Title"] = "Градски транспорт"; }
+<section class="hero">
+    <p>REPPO / Бургас</p>
+    <h1>Градски транспорт</h1>
+    <p>Изберете линия и вижте кога тръгва следващият автобус.</p>
+    <a class="button" asp-controller="Schedules" asp-action="Index">Виж разписанието</a>
+</section>
+<section class="tiles">
+    <a asp-controller="Routes" asp-action="Index"><h2>Маршрути</h2><p>Начална и крайна спирка по линии</p></a>
+    <a asp-controller="Buses" asp-action="Index"><h2>Автобуси</h2><p>Марки, модели и регистрационни номера</p></a>
+</section>

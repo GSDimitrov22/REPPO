@@ -1,25 +1,24 @@
-﻿{
-  "$schema": "https://json.schemastore.org/launchsettings.json",
+{
   "profiles": {
-    "http": {
+    "REPPO-Local": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "applicationUrl": "http://localhost:5177",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DatabaseProvider": "Sqlite"
       }
     },
-    "https": {
+    "REPPO-SQLServer": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:7052;http://localhost:5177",
+      "applicationUrl": "http://localhost:5177",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DatabaseProvider": "SqlServer"
       }
     }
   }
 }
-
-

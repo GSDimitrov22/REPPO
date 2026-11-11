@@ -1,107 +1,75 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
 using WebApplication1.Models;
+using Route = WebApplication1.Models.Route;
 
-namespace WebApplication1.Controllers
+namespace WebApplication1.Controllers;
+
+[Authorize(Roles = "Admin")]
+public class DriversController(TransportContext db) : Controller
 {
-    [Authorize(Roles = "Admin")]
-    public class DriversController : Controller
+    
+    public async Task<IActionResult> Index()
     {
-        private readonly TransportContext _context;
+        return View(await db.Drivers.AsNoTracking().OrderBy(x => x.FirstName).ToListAsync());
+    }
 
-        public DriversController(TransportContext context)
-        {
-            _context = context;
-        }
+    public IActionResult Create()
+    {
+        return View("Form", new Driver { HireDate = DateTime.Today });
+    }
 
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Drivers.ToListAsync());
-        }
+    public async Task<IActionResult> Edit(int id)
+    {
+        var item = await db.Drivers.FindAsync(id);
+        if (item == null) return NotFound();
+        return View("Form", item);
+    }
 
-        public async Task<IActionResult> Details(int? id)
+    [HttpPost]
+    public async Task<IActionResult> Save(int id, [Bind("FirstName,LastName,LicenseCategory,HireDate")] Driver item)
+    {
+        item.DriverID = id;
+        if (ModelState.IsValid)
         {
-            if (id == null) return NotFound();
-            var driver = await _context.Drivers.FirstOrDefaultAsync(m => m.DriverID == id);
-            if (driver == null) return NotFound();
-            return View(driver);
-        }
-
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DriverID,FirstName,LastName,LicenseCategory,HireDate")] Driver driver)
-        {
-            if (ModelState.IsValid)
+            if (id == 0)
+                db.Drivers.Add(item);
+            else
+                db.Drivers.Update(item);
+            try
             {
-                _context.Add(driver);
-                await _context.SaveChangesAsync();
+                await db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(driver);
-        }
-
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null) return NotFound();
-            var driver = await _context.Drivers.FindAsync(id);
-            if (driver == null) return NotFound();
-            return View(driver);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DriverID,FirstName,LastName,LicenseCategory,HireDate")] Driver driver)
-        {
-            if (id != driver.DriverID) return NotFound();
-
-            if (ModelState.IsValid)
+            catch (DbUpdateConcurrencyException)
             {
-                try
-                {
-                    _context.Update(driver);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DriverExists(driver.DriverID)) return NotFound();
-                    else throw;
-                }
-                return RedirectToAction(nameof(Index));
+                return NotFound();
             }
-            return View(driver);
-        }
-
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null) return NotFound();
-            var driver = await _context.Drivers.FirstOrDefaultAsync(m => m.DriverID == id);
-            if (driver == null) return NotFound();
-            return View(driver);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var driver = await _context.Drivers.FindAsync(id);
-            if (driver != null)
+            catch (DbUpdateException)
             {
-                _context.Drivers.Remove(driver);
-                await _context.SaveChangesAsync();
+                ModelState.AddModelError("", "Проверете за дублирана стойност или невалидна връзка.");
             }
-            return RedirectToAction(nameof(Index));
         }
+        return View("Form", item);
+    }
 
-        private bool DriverExists(int id)
+    [HttpPost]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var item = await db.Drivers.FindAsync(id);
+        if (item == null) return NotFound();
+        db.Drivers.Remove(item);
+        try
         {
-            return _context.Drivers.Any(e => e.DriverID == id);
+            await db.SaveChangesAsync();
         }
+        catch (DbUpdateException)
+        {
+            TempData["Message"] = "Записът се използва и не може да бъде изтрит.";
+        }
+        return RedirectToAction(nameof(Index));
     }
 }

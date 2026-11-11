@@ -1,0 +1,22 @@
+@model WebApplication1.Models.Schedule
+@{ ViewData["Title"] = Model.ScheduleID == 0 ? "Нов запис" : "Редактиране"; }
+<h1>@ViewData["Title"] · Разписание</h1>
+<form class="editor" asp-action="Save" asp-route-id="@Model.ScheduleID" method="post">
+    <div asp-validation-summary="ModelOnly"></div>
+    <label asp-for="RouteID"></label>
+    <select asp-for="RouteID" asp-items="ViewBag.RouteID"><option value="">Изберете…</option></select>
+    <span asp-validation-for="RouteID"></span>
+    <label asp-for="VehicleID"></label>
+    <select asp-for="VehicleID" asp-items="ViewBag.VehicleID"><option value="">Изберете…</option></select>
+    <span asp-validation-for="VehicleID"></span>
+    <label asp-for="DriverID"></label>
+    <select asp-for="DriverID" asp-items="ViewBag.DriverID"><option value="">Изберете…</option></select>
+    <span asp-validation-for="DriverID"></span>
+    <label asp-for="DepartureTime"></label>
+    <input asp-for="DepartureTime" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+    <span asp-validation-for="DepartureTime"></span>
+    <label asp-for="ArrivalTime"></label>
+    <input asp-for="ArrivalTime" type="datetime-local" asp-format="{0:yyyy-MM-ddTHH:mm}" />
+    <span asp-validation-for="ArrivalTime"></span>
+    <div><button>Запази</button> <a asp-action="Index">Отказ</a></div>
+</form>
