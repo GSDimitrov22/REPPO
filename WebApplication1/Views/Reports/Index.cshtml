@@ -1,0 +1,63 @@
+﻿@model WebApplication1.Services.TransportReport
+
+@{
+    ViewData["Title"] = "Справки";
+    int maxTrips = Model.Months.Select(r => r.Trips).DefaultIfEmpty(1).Max();
+    int maxRequests = Math.Max(1, Model.Lines.Select(r => r.Requests).DefaultIfEmpty().Max());
+}
+
+<h1>Справки за транспорта</h1>
+
+<p>
+    Общо курсове: <strong>@Model.Trips</strong> ·
+    Активни заявки: <strong>@Model.Requests</strong>
+</p>
+
+<a class="button" asp-action="Excel">Изтегли Excel</a>
+
+@if (Model.Trips == 0)
+{
+    <p>Все още няма курсове в разписанието.</p>
+}
+else
+{
+    <h2>Курсове по месеци</h2>
+    <table>
+        <thead>
+        <tr><th>Месец на заминаване</th><th>Курсове</th><th>Заявки</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var row in Model.Months)
+        {
+            <tr>
+                <th scope="row">@row.Name</th>
+                <td>
+                    <meter aria-label="Курсове" min="0" max="@maxTrips" value="@row.Trips"></meter>
+                    @row.Trips
+                </td>
+                <td>@row.Requests</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <h2>Най-търсени линии</h2>
+    <table>
+        <thead>
+        <tr><th>Линия</th><th>Заявки</th><th>Курсове</th></tr>
+        </thead>
+        <tbody>
+        @foreach (var row in Model.Lines)
+        {
+            <tr>
+                <th scope="row">@row.Name</th>
+                <td>
+                    <meter aria-label="Заявки" min="0" max="@maxRequests" value="@row.Requests"></meter>
+                    @row.Requests
+                </td>
+                <td>@row.Trips</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
