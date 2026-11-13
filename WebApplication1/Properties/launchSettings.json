@@ -7,7 +7,8 @@
       "applicationUrl": "http://localhost:5177",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DatabaseProvider": "Sqlite"
+        "DatabaseProvider": "Sqlite",
+        "DOTNET_ROLL_FORWARD": "Major"
       }
     },
     "REPPO-SQLServer": {
@@ -17,7 +18,8 @@
       "applicationUrl": "http://localhost:5177",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DatabaseProvider": "SqlServer"
+        "DatabaseProvider": "SqlServer",
+        "DOTNET_ROLL_FORWARD": "Major"
       }
     }
   }

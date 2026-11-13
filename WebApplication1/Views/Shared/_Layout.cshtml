@@ -7,29 +7,42 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 <body>
-<header><nav aria-label="Главно меню">
-    <a class="brand" asp-controller="Home" asp-action="Index">REPPO</a>
-    <a asp-controller="Schedules" asp-action="Index">Разписание</a>
-    <a asp-controller="Routes" asp-action="Index">Маршрути</a>
-    <a asp-controller="Stops" asp-action="Index">Спирки</a>
-    <a asp-controller="Buses" asp-action="Index">Автобуси</a>
-    @if (User.IsInRole("Admin"))
-    {
-        <a asp-controller="Drivers" asp-action="Index">Шофьори</a>
-    }
-    @if (User.Identity?.IsAuthenticated == true)
-    {
-        <a asp-controller="Requests" asp-action="Index">Заявки</a>
-        <form asp-controller="Account" asp-action="Logout" method="post"><button class="link">Изход</button></form>
-    }
-    else
-    {
-        <a asp-controller="Account" asp-action="Login">Вход</a>
-        <a asp-controller="Account" asp-action="Register">Регистрация</a>
-    }
-</nav></header>
+<header>
+    <nav aria-label="Главно меню">
+        <a class="brand" asp-controller="Home" asp-action="Index">REPPO</a>
+        <a asp-controller="Schedules" asp-action="Index">Разписание</a>
+        <a asp-controller="Routes" asp-action="Index">Маршрути</a>
+        <a asp-controller="Stops" asp-action="Index">Спирки</a>
+        <a asp-controller="Buses" asp-action="Index">Автобуси</a>
+
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-controller="Reports" asp-action="Index">Справки</a>
+            <a asp-controller="Drivers" asp-action="Index">Шофьори</a>
+        }
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <a asp-controller="Requests" asp-action="Index">Заявки</a>
+            <form asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="link">Изход</button>
+            </form>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login">Вход</a>
+            <a asp-controller="Account" asp-action="Register">Регистрация</a>
+        }
+    </nav>
+</header>
+
 <main>
-@if (TempData["Message"] is string message) { <p class="notice" role="status">@message</p> }
-@RenderBody()
+    @if (TempData["Message"] is string message)
+    {
+        <p class="notice" role="status">@message</p>
+    }
+
+    @RenderBody()
 </main>
-</body></html>
+</body>
+</html>
